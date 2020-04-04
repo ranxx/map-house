@@ -69,9 +69,12 @@ function workLocationSelected(e) {
     loadWorkLocation();
 }
 
-setInterval(() => {
+// setInterval(() => {
+//     showWorklocation()
+// }, 1000);
+setTimeout(()=>{
     showWorklocation()
-}, 1000);
+}, 5000)
 
 function loadWorkMarker(x, y, locationName) {
     workMarker = new AMap.Marker({
@@ -172,7 +175,8 @@ function delRentLocation() {
 function showWorklocation() {
     if (workMarker) map.remove(workMarker);
     var flag = false
-    if (workAddress != document.getElementById('work-location').value) {
+    console.log(workAddress)
+    if ( workAddress != null && workAddress != "" && workAddress != document.getElementById('work-location').value) {
         if (polygonArray) {map.remove(polygonArray);flag=true}
     }
     workAddress = document.getElementById('work-location').value
