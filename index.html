@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+        <title>毕业生租房</title>
+        <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
+        <link rel="stylesheet" href="http://cache.amap.com/lbs/static/jquery.range.css" />
+        <script src="http://cache.amap.com/lbs/static/jquery-1.9.1.js"></script>
+        <script src="http://cache.amap.com/lbs/static/es5.min.js"></script>
+        <!-- 
+            ArrivalRange：公交到达圈
+            Scale：标尺
+            Geocoder：正向地理编码（地址-坐标）
+            Transfer：路径规划
+            Autocomplete：地址自动补全
+         -->
+        <script src="http://webapi.amap.com/maps?v=1.4.15&key=22d3816e107f199992666d6412fa0691&plugin=AMap.ArrivalRange,AMap.Scale,AMap.Geocoder,AMap.Transfer,AMap.Autocomplete"></script>
+        <script src="http://cache.amap.com/lbs/static/jquery.range.js"></script>
+        <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+        <script src="./index.js"></script>
+        <style>
+        .control-panel {
+            position: absolute;
+            top: 30px;
+            right: 20px;
+        }
+
+        .control-entry {
+            width: 280px;
+            background-color: rgba(119, 136, 153, 0.8);
+            font-family: fantasy, sans-serif;
+            text-align: left;
+            color: white;
+            overflow: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .control-input {
+            margin-left: 120px;
+        }
+
+        .control-input input[type="text"] {
+            width: 160px;
+        }
+
+        .control-panel label {
+            float: left;
+            width: 120px;
+        }
+
+        #transfer-panel {
+            position: absolute;
+            background-color: white;
+            max-height: 80%;
+            overflow-y: auto;
+            top: 20px;
+            left: 80px;
+            width: 250px;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div id="container"></div>
+        <div class="control-panel">
+            <div class="control-entry">
+                <label>选择工作地点：</label>
+                <div class="control-input">
+                    <input id="work-location" type="text" value="昆明国际会展中心">
+                </div>
+            </div>
+            <!-- <div class="input-item">
+                <div class="input-item-prepend">
+                  <span class="input-item-text" style="width:8rem;">请输入关键字</span>
+                </div>
+                <input id='tipinput' type="text">
+            </div> -->
+            <div class="control-entry">
+                <label>选择通勤方式：</label>
+                <div class="control-input">
+                    <input type="radio" name="vehicle" value="SUBWAY,BUS" onClick="takeBus(this)" checked/> 公交+地铁
+                    <input type="radio" name="vehicle" value="SUBWAY" onClick="takeSubway(this)" /> 地铁
+                    <!-- <input type="radio" name="vehicle" value="walking" onClick="walking(this)" /> 步行 -->
+                </div>
+            </div>
+            <div class="control-entry">
+                <label>导入房源文件：</label>
+                <div class="control-input">
+                    <input type="file" name="file" onChange="importRentInfo(this)" />
+                </div>
+            </div>
+        </div>
+        <div id="transfer-panel"></div>
+
+        <script>
+    
+        var map = new AMap.Map("container", {
+            resizeEnable: true,   // 页面可调整大小
+            zoomEnable: true,     // 可缩放
+            // center: [116.397428, 39.90923],
+            center: [102.715915, 25.012759], // 地图中心，这里使用的是昆明的经纬度
+            zoom: 13   // 缩放等级，数字越大离地球越近
+        });
+            //输入提示
+        var auto = new AMap.Autocomplete({
+            input: "work-location"
+        });
+        // var auto = new AMap.Autocomplete({
+        //     input: "tipinput"
+        // });
+        // AMap.event.addListener(auto, "select", workLocationSelected);
+        AMap.event.addListener(auto, "select", workLocationSelected);
+        </script>
+    </body>
+</html>
