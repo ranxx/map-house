@@ -119,7 +119,7 @@ def writeCSV(filename,hlist):
 # 第一页 https://km.58.com/chuzu/
 # 第二页 https://km.58.com/chuzu/pn2
 # 第三页 https://km.58.com/chuzu/pn3
-kunming58URL='https://km.58.com/chuzu/'
+# kunming58URL='https://km.58.com/chuzu/'
 def page(pageURL, filename):
     html, text = getRetEtree(pageURL, headers=headers)
     bstr = re.findall("charset=utf-8;base64,(.*?)'\)", text)
@@ -137,18 +137,18 @@ def page(pageURL, filename):
 
 def pageInit(url, filename):
     print("fetch ", url, " ...", " save to", filename)
-    _, text = getRetEtree(kunming58URL, headers=headers)
+    _, text = getRetEtree(url, headers=headers)
     nums = re.findall(" . . . <a href=.*?\><span>(.*?)</span>", text)
     if (len(nums) < 1):
         print("页数获取失败")
         return
     num = int(nums[0])
     #计算页数
-    print("crawl", kunming58URL, "."*6, "共", num,"页")
-    page(kunming58URL, filename)
+    print("crawl", url, "."*6, "共", num,"页")
+    page(url, filename)
     for i in range(num-1):
         time.sleep(5)
-        url = kunming58URL+"{0}{1}".format("pn", i+1)
+        url = url+"{0}{1}".format("pn", i+1)
         print("crawl", url,"."*6, "第", i+1, "页")
         page(url, filename)
 
