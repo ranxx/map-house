@@ -129,11 +129,15 @@
         var auto = new AMap.Autocomplete({
             input: "work-location"
         });
+        var city = new AMap.Autocomplete({
+            input: "city"
+        });
         // var auto = new AMap.Autocomplete({
         //     input: "tipinput"
         // });
         // AMap.event.addListener(auto, "select", workLocationSelected);
         AMap.event.addListener(auto, "select", workLocationSelected);
+        AMap.event.addListener(city, "select", citySelect);
         </script>
     </body>
 </html>

@@ -81,6 +81,48 @@ function workLocationSelected(e) {
     loadWorkLocation();
 }
 
+function citySelect(e) {
+    address = e.poi
+    // console.log(address.adcode)
+    console.log(address.district)
+    console.log(address.location)
+    // 取出 省 市 县
+    // 取出 市 区
+    // 只要市
+    // alls = String(address.district).match("(.*?)\省(.*?)\市(.*?)\县")
+    // if (!alls ){
+    //     alls = String(address.district).match("(.*?)\市(.*?)\区")
+    // }
+    //if (alls.length < 3) {
+
+        //alls = String(address.district).match("(.*?)\市(.*?)\区")
+    //}
+    // console.log(alls)
+    // city = alls[2]
+    // subcity = ""
+    // if (alls.length > 3) {
+    //     subcity = alls[3]
+    // }
+    //map.setZoomAndCenter(12, [address.location.lng, address.location.lat]);
+    // // 定位
+    var geocoder = new AMap.Geocoder({
+        city: address.district,
+        radius: 1000
+    });
+    geocoder.getLocation(address.district, function(status, result) {
+        if (status === "complete" && result.info === 'OK') {
+            var geocode = result.geocodes[0];
+            x = geocode.location.getLng();
+            y = geocode.location.getLat();
+            console.log(geocode)
+            //地图移动到工作地点的位置
+            map.setZoomAndCenter(12, [x, y]);
+        }else{
+            console.log("falt",status, result)
+        }
+    })
+}
+
 
 
 function loadWorkMarker(x, y, locationName) {
@@ -147,7 +189,7 @@ function addMarkerByAddress(obj) {
                 index = rentMarker.content.lastIndexOf('</div>')
                 rentMarker.content = rentMarker.content.substr(0, index)
                 rentMarker.content += tmp.content
-                console.log(rentMarker.content)
+                // console.log(rentMarker.content)
                 rentMarker.title += "\n"+ tmp.title
                 map.remove(tmp)
             }
