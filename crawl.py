@@ -148,9 +148,9 @@ def pageInit(url, filename):
     page(url, filename)
     for i in range(num-1):
         time.sleep(5)
-        url = url+"{0}{1}".format("pn", i+1)
-        print("crawl", url,"."*6, "第", i+1, "页")
-        page(url, filename)
+        tmp = url+"{0}{1}".format("pn", i+1)
+        print("crawl", tmp,"."*6, "第", i+1, "页")
+        page(tmp, filename)
 
 
 def tips():
