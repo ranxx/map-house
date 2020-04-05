@@ -24,6 +24,18 @@ var rentMarkerArray = [];
 var polygonArray = [];
 //路径规划
 var amapTransfer;
+//
+var addressMap = new Map();
+// setInterval(() => {
+//     showWorklocation()
+// }, 1000);
+setTimeout(()=>{
+    showWorklocation()
+}, 5000)
+
+// setTimeout(()=>{
+//     console.log("addressMap.length", addressMap.length)
+// }, 200000)
 
 //信息窗体对象,在房源标记被点击时弹出，参考给多个点添加信息窗体。
 var infoWindow = new AMap.InfoWindow({
@@ -69,12 +81,7 @@ function workLocationSelected(e) {
     loadWorkLocation();
 }
 
-// setInterval(() => {
-//     showWorklocation()
-// }, 1000);
-setTimeout(()=>{
-    showWorklocation()
-}, 5000)
+
 
 function loadWorkMarker(x, y, locationName) {
     workMarker = new AMap.Marker({
@@ -128,11 +135,25 @@ function addMarkerByAddress(obj) {
                 icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
                 position: [geocode.location.getLng(), geocode.location.getLat()]
             });
-            rentMarkerArray.push(rentMarker);
-            rentMarker.content = "<div>房源：<a target = '_blank' href='" + obj.url + "'>" + obj.title + "</a>"+
+            rentMarker.content = '<div class="panel-body" style="min-height: 100px; max-height: 300px; overflow:scroll">'+"<div>房源：<a target = '_blank' href='" + obj.url + "'>" + obj.title + "</a>"+
             "<p>房价："+obj.price+"</p>"+
-            "<p>来源："+obj.source+"</p>"+"<div>"
+            "<p>来源："+obj.source+"</p>"+"</div></div>"
             rentMarker.address = obj.address
+            rentMarker.title = obj.title
+            // addressMap.set(obj.address, rentMarker)
+            tmp = addressMap.get(obj.address)
+            if (tmp != null) {
+                tmp.content = tmp.content.replace('<div class="panel-body" style="min-height: 100px; max-height: 300px; overflow:scroll">','')
+                index = rentMarker.content.lastIndexOf('</div>')
+                rentMarker.content = rentMarker.content.substr(0, index)
+                rentMarker.content += tmp.content
+                console.log(rentMarker.content)
+                rentMarker.title += "\n"+ tmp.title
+                map.remove(tmp)
+            }
+                rentMarkerArray.push(rentMarker);
+                addressMap.set(obj.address, rentMarker)
+            
             // 在房源标记被点击时打开
             rentMarker.on('click', (e)=> {
                 workAddress = document.getElementById('work-location').value
@@ -195,8 +216,6 @@ function showWorklocation() {
                 //加载60分钟内工作地点到达圈
                 loadWorkRange(x, y, 60, "#3f67a5", vehicle);
             }
-            //地图移动到工作地点的位置
-            // map.setZoomAndCenter(12, [x, y]);
         }
     })
 }

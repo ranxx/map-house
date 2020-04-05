@@ -8,7 +8,6 @@ import time
 import csv
 from lxml import etree
 
-
 def getRetEtree(url, params=None, **kwargs):
     """
         GET请求 url，并返回etree.HTML对象
@@ -135,13 +134,18 @@ def page(pageURL):
     writeCSV(content)
 
 def pageInit():
+    _, text = getRetEtree(kunming58URL, headers=headers)
+    nums = re.findall(" . . . <a href=.*?\><span>(.*?)</span>", text)
+    if (len(nums) < 1):
+        return
+    num = int(nums[0])
     #计算页数
-    print("crawl", kunming58URL, "."*6)
+    print("crawl", kunming58URL, "."*6, "共", num,"页")
     page(kunming58URL)
-    for i in range(69):
+    for i in range(num-1):
         time.sleep(5)
         url = kunming58URL+"{0}{1}".format("pn", i+1)
-        print("crawl", url,"."*6)
+        print("crawl", url,"."*6, "第", i+1, "页")
         page(url)
     # pass
 
