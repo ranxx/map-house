@@ -7,6 +7,8 @@ import re
 import time
 import csv
 from lxml import etree
+import sys
+import citydict
 
 def getRetEtree(url, params=None, **kwargs):
     """
@@ -106,8 +108,8 @@ def houseInfo(hlist):
     return ret
 
 
-def writeCSV(hlist):
-    csv_file = open("kunming.csv","a+")
+def writeCSV(filename,hlist):
+    csv_file = open(filename,"a+")
     csv_writer = csv.writer(csv_file, delimiter=",")
     for i in range(len(hlist)):
         csv_writer.writerow(hlist[i])
@@ -118,7 +120,7 @@ def writeCSV(hlist):
 # 第二页 https://km.58.com/chuzu/pn2
 # 第三页 https://km.58.com/chuzu/pn3
 kunming58URL='https://km.58.com/chuzu/'
-def page(pageURL):
+def page(pageURL, filename):
     html, text = getRetEtree(pageURL, headers=headers)
     bstr = re.findall("charset=utf-8;base64,(.*?)'\)", text)
     if (len(bstr) <1):
@@ -131,27 +133,85 @@ def page(pageURL):
         print(pageURL,"获取失败")
         return
     # 写入csv
-    writeCSV(content)
+    writeCSV(filename, content)
 
-def pageInit():
+def pageInit(url, filename):
+    print("fetch ", url, " ...", " save to", filename)
+    return
     _, text = getRetEtree(kunming58URL, headers=headers)
     nums = re.findall(" . . . <a href=.*?\><span>(.*?)</span>", text)
     if (len(nums) < 1):
+        print("页数获取失败")
         return
     num = int(nums[0])
     #计算页数
     print("crawl", kunming58URL, "."*6, "共", num,"页")
-    page(kunming58URL)
+    page(kunming58URL, filename)
     for i in range(num-1):
         time.sleep(5)
         url = kunming58URL+"{0}{1}".format("pn", i+1)
         print("crawl", url,"."*6, "第", i+1, "页")
-        page(url)
-    # pass
+        page(url, filename)
+
+
+def tips():
+    tip="""
+    此文件只是用来爬取数据的
+    ex：
+    最小力度为市：
+        python crawl.py 北京[市]
+        python crawl.py 昆明[市]
+        python crawl.py 云南[省] 昆明[市]
+    """
+    print(tip)
+    exit()
+
+
+chuzu = "https://{0}.58.com/chuzu/"
+def matchCity(c):
+    for (k, v) in  citydict.cityList.items():
+        for (k2, v2) in v.items():
+            if k2 == c | k2 == c[:-2]:
+                v2 = v2.split("|")
+                return chuzu.format(v2[0]),v2[0]
+    return ""
+
+def matchCityV2(p, c):
+    p2 = citydict.cityList[p]
+    if (not p2) & (len(p) > 1):
+        p2 = citydict.cityList[p[:-2]]
+    if not p2:
+        tips()
+    c2 = p2[c]
+    if (not c2) & (len(c) > 1):
+        c2 = p2[c[:-2]]
+    if not c2:
+        tips()
+    v2 = c2.split("|")
+    return chuzu.format(v2[0]),v2[0]
 
 if __name__ == "__main__":
-    pageInit()
+    if (len(sys.argv[1:]) < 1 ):
+        tips()
+    city = sys.argv[1]
+    province = ""
+    if (len(sys.argv[1:]) > 1):
+        province = sys.argv[1]
+        city = sys.argv[2]
+    
+    url = ""
+    if province== "":
+        url = matchCity(city)
+    else:
+        url = matchCityV2(province, city)
+    
+    print(url[0], url[1])
+    pageInit(url[0], url[1]+".csv")
+
 
 """ csv
 [房源名称，地址，月租，房源url地址]。
 """
+
+
+

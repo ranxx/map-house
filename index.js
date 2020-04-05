@@ -1,3 +1,4 @@
+
 var map = new AMap.Map("container", {
     resizeEnable: true,
     zoomEnable: true,
@@ -26,6 +27,7 @@ var polygonArray = [];
 var amapTransfer;
 //
 var addressMap = new Map();
+var defaultCity = "昆明市";
 // setInterval(() => {
 //     showWorklocation()
 // }, 1000);
@@ -84,8 +86,11 @@ function workLocationSelected(e) {
 function citySelect(e) {
     address = e.poi
     // console.log(address.adcode)
-    console.log(address.district)
-    console.log(address.location)
+    console.log("address.district", address.district)
+    console.log("address.location", address.location)
+    if (!address.location || address.location === null) {
+    }
+    
     // 取出 省 市 县
     // 取出 市 区
     // 只要市
@@ -114,9 +119,29 @@ function citySelect(e) {
             var geocode = result.geocodes[0];
             x = geocode.location.getLng();
             y = geocode.location.getLat();
-            console.log(geocode)
+            // 省 市
+            name = geocode.formattedAddress
+            reg = '省(.*?)\市'
+            if (name.indexOf("省") == -1){
+                reg = '(.*?)\市'
+            }
+            citys = name.match(reg)
+            console.log("citys", citys)
+            pro = name.match('(.*?)\省')
+            if (citys && citys.length > 1) {
+                citys = citys[1]
+            }
+            if (!citys || citys === null) {
+                citys = provinceCityList[pro[1]]
+            }
+            if (!citys || citys === null) {
+                return
+            }
+            console.log("name", name,"names", citys)
+            defaultCity=citys
             //地图移动到工作地点的位置
             map.setZoomAndCenter(12, [x, y]);
+            // 修改默认城市
         }else{
             console.log("falt",status, result)
         }
@@ -244,7 +269,7 @@ function showWorklocation() {
     }
     workAddress = document.getElementById('work-location').value
     var geocoder = new AMap.Geocoder({
-        city: "昆明市",
+        city: defaultCity,
         radius: 1000
     });
     geocoder.getLocation(workAddress, function(status, result) {
@@ -266,7 +291,7 @@ function loadWorkLocation() {
     //首先清空地图上已有的到达圈
     delWorkLocation();
     var geocoder = new AMap.Geocoder({
-        city: "昆明市",
+        city: defaultCity,
         radius: 1000
     });
 
@@ -300,7 +325,7 @@ function loadRentLocationByFile(fileName) {
                 return
             }
             obj={
-                city:"昆明市",
+                city:defaultCity,
                 source: "58同城",
                 title:items[0],
                 address:items[1],
@@ -319,3 +344,11 @@ function loadRentLocationByFile(fileName) {
 function wwww(params) {
     console.log("aj ndoa")
 }
+var provinceCityList = {
+    "安徽": "合肥", "福建": "福州", "广东": "深圳", "广西": "南宁", "贵州": "贵阳",
+    "甘肃": "兰州", "海南": "海口", "河南": "郑州", "黑龙江": "哈尔滨", "湖北": "武汉",
+    "湖南": "长沙", "河北": "石家庄", "江苏": "南京", "江西": "南昌", "吉林": "长春",
+    "辽宁": "沈阳", "宁夏": "银川", "内蒙古": "呼和浩特", "青海": "西宁", "山东": "济南",
+    "山西": "太原", "陕西": "西安", "四川": "成都", "新疆": "乌鲁木齐", "西藏": "拉萨",
+    "云南": "昆明", "浙江": "杭州"
+};
