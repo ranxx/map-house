@@ -137,7 +137,6 @@ def page(pageURL, filename):
 
 def pageInit(url, filename):
     print("fetch ", url, " ...", " save to", filename)
-    return
     _, text = getRetEtree(kunming58URL, headers=headers)
     nums = re.findall(" . . . <a href=.*?\><span>(.*?)</span>", text)
     if (len(nums) < 1):
