@@ -170,15 +170,23 @@ chuzu = "https://{0}.58.com/chuzu/"
 def matchCity(c):
     for (k, v) in  citydict.cityList.items():
         for (k2, v2) in v.items():
-            if k2 == c | k2 == c[:-2]:
+            if (k2 == c) | (k2 == c[:-1]):
                 v2 = v2.split("|")
                 return chuzu.format(v2[0]),v2[0]
-    return ""
+    v2 = citydict.independentCityList[c]
+    if v2 != "":
+        v2 = v2.split("|")
+        return chuzu.format(v2[0]),v2[0]
+    v2 = citydict.independentCityList[c[:-1]]
+    if v2 != "":
+        v2 = v2.split("|")
+        return chuzu.format(v2[0]),v2[0]
+    tips()
 
 def matchCityV2(p, c):
     p2 = citydict.cityList[p]
     if (not p2) & (len(p) > 1):
-        p2 = citydict.cityList[p[:-2]]
+        p2 = citydict.cityList[p[:-1]]
     if not p2:
         tips()
     c2 = p2[c]
@@ -197,13 +205,11 @@ if __name__ == "__main__":
     if (len(sys.argv[1:]) > 1):
         province = sys.argv[1]
         city = sys.argv[2]
-    
-    url = ""
+    url = ()
     if province== "":
         url = matchCity(city)
     else:
         url = matchCityV2(province, city)
-    
     print(url[0], url[1])
     pageInit(url[0], url[1]+".csv")
 
